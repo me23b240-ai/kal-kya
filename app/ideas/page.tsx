@@ -28,7 +28,6 @@ export default async function IdeasPage({ searchParams }: { searchParams: Promis
   const rawMembers = await loadMembers(db, household.id);
   const members = rawMembers.map((m) => ({ id: m.id, name: m.name, tint: tintFor(m.name), isCook: m.is_cook, voted: false, avatarUrl: null }));
   const viewer = rawMembers.find((m) => m.id === as) ?? rawMembers[0];
-  const nameOf = (id: string | null) => (id ? rawMembers.find((m) => m.id === id)?.name ?? "Someone" : "Someone");
   const ideas = await loadSavedIdeas(db, household.id);
 
   return (
@@ -36,7 +35,12 @@ export default async function IdeasPage({ searchParams }: { searchParams: Promis
       <Header household={household.name} members={isSolo ? undefined : members} viewerId={isSolo ? undefined : viewer.id} />
       <p className="lede"><Link href={isSolo ? "/solo" : `/?as=${viewer.id}`}>{"\u2190"} Back</Link></p>
       <h2 className="day">Saved ideas</h2>
-      <SavedIdeas viewerId={viewer.id} ideas={ideas} isSolo={isSolo} memberNameOf={nameOf} />
+      <SavedIdeas
+        viewerId={viewer.id}
+        ideas={ideas}
+        isSolo={isSolo}
+        members={rawMembers.map((m) => ({ id: m.id, name: m.name }))}
+      />
       <TabBar mode={isSolo ? "single" : "family"} viewerId={isSolo ? undefined : viewer.id} />
     </main>
   );

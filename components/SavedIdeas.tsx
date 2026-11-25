@@ -7,8 +7,8 @@ const effortLabel: Record<string, string> = { low: "Low effort", medium: "Medium
 const CATEGORY_SUGGESTIONS = ["rice", "curry", "sabji", "dal", "pasta", "snack", "dessert", "soup", "salad", "bread", "drink"];
 
 export default function SavedIdeas({
-  viewerId, ideas, isSolo = false, memberNameOf,
-}: { viewerId: string; ideas: SavedIdea[]; isSolo?: boolean; memberNameOf: (id: string | null) => string }) {
+  viewerId, ideas, isSolo = false, members,
+}: { viewerId: string; ideas: SavedIdea[]; isSolo?: boolean; members: { id: string; name: string }[] }) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [busy, setBusy] = useState<string | null>(null);
@@ -20,6 +20,7 @@ export default function SavedIdeas({
   const [category, setCategory] = useState("");
 
   const householdField = isSolo ? "single" : "family";
+  const nameOf = (id: string | null) => (id ? members.find((m) => m.id === id)?.name ?? "Someone" : "Someone");
 
   async function post(method: string, body: Record<string, unknown>, key: string) {
     setError(null); setBusy(key);
@@ -55,7 +56,7 @@ export default function SavedIdeas({
   return (
     <section className="panel" aria-label="Saved ideas">
       <h3>Saved ideas</h3>
-      <p className="note">Bookmark a dish idea from Instagram, YouTube, wherever - with a rough sense of effort, time and category, so it's easy to pick up later.</p>
+      <p className="note">Bookmark a dish idea from Instagram, YouTube, wherever — with a rough sense of effort, time and category, so it's easy to pick up later.</p>
 
       {ideas.length === 0 ? (
         <p className="note">Nothing saved yet.</p>
@@ -68,7 +69,7 @@ export default function SavedIdeas({
                 <span className="note">
                   {[idea.category, idea.effort ? effortLabel[idea.effort] : null, idea.time_minutes ? `${idea.time_minutes} min` : null]
                     .filter(Boolean).join(" \u00b7 ")}
-                  {idea.added_by ? ` \u00b7 Added by ${memberNameOf(idea.added_by)}` : ""}
+                  {idea.added_by ? ` \u00b7 Added by ${nameOf(idea.added_by)}` : ""}
                 </span>
                 {idea.link && (
                   <a href={idea.link} target="_blank" rel="noopener noreferrer">Open link</a>
