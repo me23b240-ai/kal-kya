@@ -375,3 +375,7 @@ body { background: #fff; }
 .wrap { padding: 12px 16px 84px; }
 .head { gap: 10px; margin-bottom: 14px; }
 .chips-label { margin: 6px 0 2px; }
+
+/* ---------- fix: demo-disclosure-body forced display:grid even when closed ---------- */
+.demo-disclosure-body { display: none; gap: 10px; margin-top: 8px; padding: 14px; border: 2px dashed var(--line); border-radius: 16px; }
+.demo-disclosure[open] .demo-disclosure-body { display: grid; }
