@@ -1,77 +1,45 @@
-# Kal Kya?
+# Kal Kya
 
-Household meal-decision tool. This step: project setup + data layer only.
+A household meal-decision tool. Stage 1: setup and data layer. Stage 2: voting, locking, tie-breaks.
 
 ## Environment variables
-
-Copy `.env.example` to `.env.local` and fill in:
+Copy `.env.example` to `.env.local`.
 
 | Variable | Public? | Notes |
-
 |---|---|---|
-
 | `NEXT_PUBLIC_SUPABASE_URL` | yes | Supabase project URL |
-
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | yes | anon key |
-
-| `SUPABASE_SERVICE_ROLE_KEY` | **no** | server-only, never prefix with NEXT_PUBLIC_ |
-
+| `SUPABASE_SERVICE_ROLE_KEY` | **no** | server-only. All reads and writes for the vote screen use it |
 | `GEMINI_API_KEY` | **no** | server-only, not used yet |
 
-## Run the schema
+## Database
+Run in the Supabase SQL Editor, in this order: `supabase/schema.sql`, `supabase/seed.sql`, `supabase/stage2.sql`.
+Row Level Security is OFF on every table (demo only, no login yet). Do not use real data.
 
-1. Supabase dashboard → SQL Editor.
-
-2. Paste and run `supabase/schema.sql` (once, on a fresh project).
-
-3. Paste and run `supabase/seed.sql`.
-
-## Run locally
-
+## Run
 ```
-
 npm install
-
-npm run dev
-
+npm run dev      # http://localhost:3000
+npm test         # unit tests for the lock rules
 ```
 
-Open [http://localhost:3000](http://localhost:3000). You should see 4 members.
-
-## Demo warning
-
-Row Level Security is OFF on all tables. Do not use real data.
-
-## Check: duplicate vote is rejected
-
-In the SQL editor (run all at once; the last statement should fail with error 23505):
-
+## How a day works
+- The screen shows **tomorrow**. It locks at `households.lock_time` on the evening before (default 21:00, Asia/Kolkata).
+- The first request after that time locks the day. "Lock now" does it early (demo only).
+- If it is already past lock time when a new day is first opened, it locks straight away with no votes (option A). For testing, push the time later:
 ```sql
-
-insert into plan_days (id, household_id, day)
-
-values ('d0000000-0000-0000-0000-000000000001','a0000000-0000-0000-0000-000000000001', current_date);
-
-insert into votes values ('d0000000-0000-0000-0000-000000000001','b0000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001');
-
-insert into votes values ('d0000000-0000-0000-0000-000000000001','b0000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000002');
-
+update households set lock_time = '23:59';
 ```
 
-Clean up afterwards: `delete from plan_days where id = 'd0000000-0000-0000-0000-000000000001';`
-
-## Check: no secrets in the client bundle
-
+## Test again after a day has locked
+```sql
+delete from plan_days;   -- also clears votes, tie picks and skips
+update households set turn_member_id = 'b0000000-0000-0000-0000-000000000001';
 ```
 
-npm run build
+## Try the tie-break
+Open the page as Mom, Dad, Sister, Me in turn. Vote 2 to 2. Whoever holds the turn (Mom at first) sees a tie panel: pick a dish or pass. Then press "Lock now".
 
-Get-ChildItem .next\static -Recurse -File | Select-String -Pattern "SUPABASE_SERVICE_ROLE_KEY","GEMINI_API_KEY"
-
-```
-
-Also search for the actual key values (the service key's JWT is base64, so searching the word "service_role" won't find it). Expect no output from either.
-
-## Vercel
-
-Add the same four variables in Project Settings → Environment Variables.
+## Checks
+- A second vote by one member on one day is rejected by the `votes` primary key; changing a vote replaces it.
+- Secrets: `npm run build`, then search `.next\static` for the key names and values (see stage 1 steps).
