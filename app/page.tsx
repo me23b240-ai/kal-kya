@@ -1,69 +1,72 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { supabase } from "@/lib/supabase/public";
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+export const dynamic = "force-dynamic"; // always read fresh from the DB
+
+type Member = { id: string; name: string; is_cook: boolean; turn_order: number | null };
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ as?: string }>;
+}) {
+  const { as } = await searchParams;
+
+  const { data: household, error: hErr } = await supabase
+    .from("households")
+    .select("id, name, mode, lock_time")
+    .eq("mode", "family")
+    .order("created_at")
+    .limit(1)
+    .maybeSingle();
+
+  if (hErr || !household) {
+    return (
+      <main className="wrap">
+        <h1>Could not load household</h1>
+        <p>{hErr?.message ?? "No household found. Did you run seed.sql?"}</p>
       </main>
-    </div>
+    );
+  }
+
+  const { data } = await supabase
+    .from("members")
+    .select("id, name, is_cook, turn_order")
+    .eq("household_id", household.id)
+    .order("turn_order");
+
+  const members: Member[] = data ?? [];
+  const current = members.find((m) => m.id === as) ?? members[0];
+
+  return (
+    <main className="wrap">
+      <h1>{household.name}</h1>
+      <p className="muted">
+        Mode: {household.mode} · Locks at {household.lock_time}
+      </p>
+
+      <h2>View as</h2>
+      <nav className="switch">
+        {members.map((m) => (
+          <a
+            key={m.id}
+            href={`/?as=${m.id}`}
+            aria-current={m.id === current?.id ? "true" : undefined}
+          >
+            {m.name}
+          </a>
+        ))}
+      </nav>
+      <p>Viewing as: <strong>{current?.name}</strong></p>
+
+      <h2>Members</h2>
+      <ul className="list">
+        {members.map((m) => (
+          <li key={m.id}>
+            {m.name}
+            {m.is_cook ? " (cook)" : ""}
+          </li>
+        ))}
+      </ul>
+    </main>
   );
 }

@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kal Kya?
 
-## Getting Started
+Household meal-decision tool. This step: project setup + data layer only.
 
-First, run the development server:
+## Environment variables
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Copy `.env.example` to `.env.local` and fill in:
+
+| Variable | Public? | Notes |
+
+|---|---|---|
+
+| `NEXT_PUBLIC_SUPABASE_URL` | yes | Supabase project URL |
+
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | yes | anon key |
+
+| `SUPABASE_SERVICE_ROLE_KEY` | **no** | server-only, never prefix with NEXT_PUBLIC_ |
+
+| `GEMINI_API_KEY` | **no** | server-only, not used yet |
+
+## Run the schema
+
+1. Supabase dashboard → SQL Editor.
+
+2. Paste and run `supabase/schema.sql` (once, on a fresh project).
+
+3. Paste and run `supabase/seed.sql`.
+
+## Run locally
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+npm install
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+npm run dev
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000). You should see 4 members.
 
-To learn more about Next.js, take a look at the following resources:
+## Demo warning
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Row Level Security is OFF on all tables. Do not use real data.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Check: duplicate vote is rejected
 
-## Deploy on Vercel
+In the SQL editor (run all at once; the last statement should fail with error 23505):
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```sql
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+insert into plan_days (id, household_id, day)
+
+values ('d0000000-0000-0000-0000-000000000001','a0000000-0000-0000-0000-000000000001', current_date);
+
+insert into votes values ('d0000000-0000-0000-0000-000000000001','b0000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001');
+
+insert into votes values ('d0000000-0000-0000-0000-000000000001','b0000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000002');
+
+```
+
+Clean up afterwards: `delete from plan_days where id = 'd0000000-0000-0000-0000-000000000001';`
+
+## Check: no secrets in the client bundle
+
+```
+
+npm run build
+
+Get-ChildItem .next\static -Recurse -File | Select-String -Pattern "SUPABASE_SERVICE_ROLE_KEY","GEMINI_API_KEY"
+
+```
+
+Also search for the actual key values (the service key's JWT is base64, so searching the word "service_role" won't find it). Expect no output from either.
+
+## Vercel
+
+Add the same four variables in Project Settings → Environment Variables.
