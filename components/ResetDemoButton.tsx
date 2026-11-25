@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ResetDemoButton() {
@@ -9,6 +9,12 @@ export default function ResetDemoButton() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (!done) return;
+    const t = setTimeout(() => setDone(false), 3000);
+    return () => clearTimeout(t);
+  }, [done]);
 
   async function run() {
     setBusy(true); setError(null);

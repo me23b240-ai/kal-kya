@@ -9,7 +9,7 @@ export type RuleRow = { member_id: string | null; kind: "allergy" | "dislike"; v
 const norm = (s: string) => s.trim().toLowerCase();
 
 /** Hard filter: drops recently locked dishes and any dish matching a household/member ALLERGY.
- *  Dislikes never exclude a dish — they're informational only (shown on the card; the vote decides). */
+ *  Dislikes never exclude a dish - they're informational only (shown on the card; the vote decides). */
 export function eligibleDishes(dishes: DishRow[], allergyValues: string[], recentDishIds: string[]): DishRow[] {
   const blocked = new Set(allergyValues.map(norm));
   const recent = new Set(recentDishIds);
@@ -25,7 +25,7 @@ export function pickTwo<T>(items: T[], rng: () => number = Math.random): [T, T] 
 }
 
 /** Picks one item, weighted. Items with higher weight are proportionally more likely, but anything
- *  with weight > 0 can still be picked — this nudges, it never hard-excludes (unlike allergies). */
+ *  with weight > 0 can still be picked - this nudges, it never hard-excludes (unlike allergies). */
 export function weightedPickOne<T>(items: T[], weightOf: (item: T) => number, rng: () => number = Math.random): T | undefined {
   if (items.length === 0) return undefined;
   const weights = items.map((it) => Math.max(0.0001, weightOf(it)));

@@ -38,9 +38,8 @@ export default function PickScreen({ data }: { data: SingleViewData }) {
 
   if (data.state === "not_enough") {
     return (
-      <div className="stack">
-        <h2 className="day">{data.dayLabel}</h2>
-        <section className="state state-empty">
+      <div className="stack settle">
+        <section className="state state-empty settle">
           <span className="state-emoji" aria-hidden="true">{"\uD83E\uDED9"}</span>
           <h3>Not enough dishes to choose from</h3>
           <p>{data.shortageReason ?? `Fewer than two dishes are left for ${data.dayLabel}.`}</p>
@@ -52,9 +51,8 @@ export default function PickScreen({ data }: { data: SingleViewData }) {
 
   if (data.state === "eating_out") {
     return (
-      <div className="stack">
-        <h2 className="day">{data.dayLabel}</h2>
-        <p className="banner banner-out"><span aria-hidden="true">{"\uD83C\uDF7D\uFE0F"}</span> Eating out</p>
+      <div className="stack settle">
+        <p className="banner banner-out"><span aria-hidden="true">{"\uD83C\uDF7D\uFE0F"}</span> Eating out on {data.dayLabel}</p>
         <section className="state settle">
           <span className="state-emoji" aria-hidden="true">{"\uD83E\uDD61"}</span>
           <h3>No cooking that day</h3>
@@ -66,12 +64,11 @@ export default function PickScreen({ data }: { data: SingleViewData }) {
 
   const [a, b] = data.options;
   return (
-    <div className="stack">
-      <h2 className="day">{data.dayLabel}</h2>
+    <div className="stack settle">
       {data.state === "picked" ? (
-        <p className="banner banner-locked"><span aria-hidden="true">{"\u2713"}</span> Picked</p>
+        <p className="banner banner-locked"><span aria-hidden="true">{"\u2713"}</span> {data.dayLabel} picked</p>
       ) : (
-        <p className="lede">What'll it be for {data.dayLabel}?</p>
+        <p className="lede">{"What\u2019ll it be for " + data.dayLabel + "?"}</p>
       )}
 
       <div className="options">

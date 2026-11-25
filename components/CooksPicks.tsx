@@ -43,7 +43,7 @@ export default function CooksPicks({
   return (
     <section className="panel" aria-label="Cook's picks">
       <h3>Cook's picks</h3>
-      <p className="note">Flag a dish to make sure it gets offered for a vote at least every {nudgeEveryDays} days. It still has to win — this doesn't skip voting.</p>
+      <p className="note">Flag a dish to make sure it gets offered for a vote at least every {nudgeEveryDays} days. It still has to win - this doesn't skip voting.</p>
       <ul className="picks-list">
         {dishes.map((d) => (
           <li key={d.id} className="picks-row">

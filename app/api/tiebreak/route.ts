@@ -1,4 +1,4 @@
-import { admin, getDayContext } from "@/lib/meal/server";
+﻿import { admin, getDayContext } from "@/lib/meal/server";
 import { currentTapper, tallyVotes } from "@/lib/meal/lock";
 import { done, fail, readBody, str } from "@/lib/meal/api";
 
@@ -19,7 +19,11 @@ export async function POST(req: Request) {
     db.from("votes").select("member_id,dish_id").eq("plan_day_id", planDayId),
     db.from("turn_skips").select("member_id,reason").eq("plan_day_id", planDayId),
   ]);
-  const t = tallyVotes(plan.option_a!, plan.option_b!, ((votes as { member_id: string; dish_id: string }[]) ?? []).map((v) => ({ memberId: v.member_id, dishId: v.dish_id })), order);
+  const t = tallyVotes(
+    plan.option_a!, plan.option_b!,
+    ((votes as { member_id: string; dish_id: string }[]) ?? []).map((v) => ({ memberId: v.member_id, dishId: v.dish_id })),
+    order,
+  );
   if (!(t.a > 0 && t.a === t.b)) return fail(409, "There's no tie right now.");
 
   const passed = ((skips as { member_id: string; reason: string }[]) ?? []).filter((s) => s.reason === "pass").map((s) => s.member_id);
@@ -27,12 +31,25 @@ export async function POST(req: Request) {
 
   if (choice === "pass") {
     await db.from("tie_picks").delete().eq("plan_day_id", planDayId).eq("member_id", memberId);
-    const { error } = await db.from("turn_skips").upsert({ plan_day_id: planDayId, member_id: memberId, reason: "pass" }, { onConflict: "plan_day_id,member_id" });
-    if (error) return fail(500, "Couldn't save that. Try again.");
+    const { error } = await db.from("turn_skips").upsert(
+      { plan_day_id: planDayId, member_id: memberId, reason: "pass" },
+      { onConflict: "plan_day_id,member_id" },
+    );
+    if (error) {
+      console.error("tiebreak pass upsert failed:", error);
+      return fail(500, "Couldn't save that. Try again.");
+    }
     return done();
   }
+
   if (choice !== plan.option_a && choice !== plan.option_b) return fail(409, "That dish isn't one of today's two options.");
-  const { error } = await db.from("tie_picks").upsert({ plan_day_id: planDayId, member_id: memberId, dish_id: choice }, { onConflict: "plan_day_id,member_id" });
-  if (error) return fail(500, "Couldn't save that. Try again.");
+  const { error } = await db.from("tie_picks").upsert(
+    { plan_day_id: planDayId, member_id: memberId, dish_id: choice },
+    { onConflict: "plan_day_id,member_id" },
+  );
+  if (error) {
+    console.error("tiebreak choice upsert failed:", error);
+    return fail(500, "Couldn't save that. Try again.");
+  }
   return done();
 }

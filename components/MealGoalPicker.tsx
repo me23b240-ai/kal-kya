@@ -35,7 +35,7 @@ export default function MealGoalPicker({
     <section className="panel" aria-label="What matters most">
       <h3>What matters most right now?</h3>
       <p className="note">
-        Nudges which dish tends to get offered — it never overrides an allergy, and it never hides a dish
+        Nudges which dish tends to get offered - it never overrides an allergy, and it never hides a dish
         the way an allergy does. "More protein" only has real numbers for some dishes so far (from IFCT 2017
         food values), not guesses, so dishes without a number aren't penalised.
       </p>

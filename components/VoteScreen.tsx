@@ -50,7 +50,7 @@ export default function VoteScreen({ data }: { data: ViewData }) {
   const voted = data.members.filter((m) => m.voted).length;
 
   const people = (
-    <section className="panel" aria-label="Who has voted">
+    <section className="panel panel-quiet" aria-label="Who has voted">
       <ul className="voters">
         {data.members.map((m) => (
           <li key={m.id} className="voter" data-done={m.voted ? "true" : undefined}>
@@ -82,9 +82,8 @@ export default function VoteScreen({ data }: { data: ViewData }) {
 
   if (data.state === "not_enough") {
     return (
-      <div className="stack">
-        <h2 className="day">{data.dayLabel}</h2>
-        <section className="state state-empty">
+      <div className="stack settle">
+        <section className="state state-empty settle">
           <span className="state-emoji" aria-hidden="true">{"\uD83E\uDED9"}</span>
           <h3>Not enough dishes to choose from</h3>
           <p>{data.shortageReason ?? `Fewer than two dishes are left for ${data.dayLabel}.`}</p>
@@ -98,9 +97,8 @@ export default function VoteScreen({ data }: { data: ViewData }) {
 
   if (data.state === "eating_out") {
     return (
-      <div className="stack">
-        <h2 className="day">{data.dayLabel}</h2>
-        <p className="banner banner-out"><span aria-hidden="true">{"\uD83C\uDF7D\uFE0F"}</span> Eating out</p>
+      <div className="stack settle">
+        <p className="banner banner-out"><span aria-hidden="true">{"\uD83C\uDF7D\uFE0F"}</span> Eating out on {data.dayLabel}</p>
         <section className="state settle">
           <span className="state-emoji" aria-hidden="true">{"\uD83E\uDD61"}</span>
           <h3>No cooking that day</h3>
@@ -122,8 +120,7 @@ export default function VoteScreen({ data }: { data: ViewData }) {
     const outMembers = data.members.filter((m) => headcount.outIds.includes(m.id));
     return (
       <div className="stack settle">
-        <h2 className="day">{data.dayLabel}</h2>
-        <p className="banner banner-locked"><span aria-hidden="true">{"\u2713"}</span> Locked in</p>
+        <p className="banner banner-locked"><span aria-hidden="true">{"\u2713"}</span> {data.dayLabel} locked in</p>
         <section className="winner" aria-label={`${data.dayLabel}'s dish`}>
           <span className="dish-row"><DishFace dish={winner} /></span>
           <button type="button" className="dish-details-btn" onClick={() => setWinnerDetailOpen(true)}>Ingredients &amp; steps</button>
@@ -132,7 +129,7 @@ export default function VoteScreen({ data }: { data: ViewData }) {
           {skipped.length > 0 && <p className="why-small">Skipped for the tie-break: {skipped.map((s) => `${s.name} (${reasonText[s.reason]})`).join(", ")}.</p>}
         </section>
 
-        <section className="panel" aria-label="Who's eating">
+        <section className="panel panel-quiet" aria-label="Who's eating">
           <h3>Who's eating</h3>
           <p className="note">{eatingMembers.length} eating{outMembers.length > 0 ? `, ${outMembers.length} out` : ""}.</p>
           <div className="headcount-row">
@@ -163,13 +160,12 @@ export default function VoteScreen({ data }: { data: ViewData }) {
 
   const [a, b] = data.options;
   return (
-    <div className="stack">
-      <h2 className="day">{data.dayLabel}</h2>
+    <div className="stack settle">
       <p className="banner banner-open">
-        <span>Voting is open</span>
+        <span>Voting open for {data.dayLabel}</span>
         {data.lockAtMs && <Countdown lockAtMs={data.lockAtMs} />}
       </p>
-      <p className="lede">Pick the dish for {data.dayLabel}. You can change your mind until it locks.</p>
+      <p className="lede">Pick the dish. You can change your mind until it locks.</p>
 
       <div className="options">
         {[a, b].map((d) => (
@@ -207,12 +203,6 @@ export default function VoteScreen({ data }: { data: ViewData }) {
 
       {people}
       {eatOutButton}
-
-      <div className="demo">
-        <button className="btn btn-dashed" disabled={busy !== null} onClick={() => post("/api/lock-now", {}, "lock")}>
-          Lock now <span className="tag">demo only</span>
-        </button>
-      </div>
     </div>
   );
 }

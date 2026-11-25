@@ -65,7 +65,7 @@ export default function RulesManager({
       <p className="note">
         {isSolo
           ? "Allergies and dislikes both keep a dish off your list entirely in single mode."
-          : "Allergies keep a dish off the table entirely. Dislikes never hide a dish — they just show who isn't keen, and the vote still decides."}
+          : "Allergies keep a dish off the table entirely. Dislikes never hide a dish - they just show who isn't keen, and the vote still decides."}
       </p>
 
       {rules.length === 0 ? (

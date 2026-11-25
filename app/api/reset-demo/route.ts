@@ -1,7 +1,7 @@
 ﻿import { admin, loadHousehold, loadMembers } from "@/lib/meal/server";
 import { done, fail } from "@/lib/meal/api";
 
-// Very simple per-process rate limit (resets on cold start) — fine for a single-instance demo.
+// Very simple per-process rate limit (resets on cold start) - fine for a single-instance demo.
 const hits = new Map<string, number[]>();
 function rateLimited(key: string, max = 5, windowMs = 60_000): boolean {
   const now = Date.now();

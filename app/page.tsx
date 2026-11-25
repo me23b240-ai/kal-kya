@@ -1,9 +1,9 @@
-﻿import Link from "next/link";
-import Header from "@/components/Header";
+﻿import Header from "@/components/Header";
 import ModeToggle from "@/components/ModeToggle";
 import DayStrip from "@/components/DayStrip";
 import PlanWindowButton from "@/components/PlanWindowButton";
-import ResetDemoButton from "@/components/ResetDemoButton";
+import DemoTools from "@/components/DemoTools";
+import TabBar from "@/components/TabBar";
 import VoteScreen from "@/components/VoteScreen";
 import { buildView } from "@/lib/meal/server";
 
@@ -32,15 +32,13 @@ export default async function Home({
   return (
     <main className="wrap">
       <Header household={view.householdName} members={view.members} viewerId={view.viewerId} modeToggle={<ModeToggle current="family" />} />
-      <nav className="nav-links" aria-label="More">
-        <Link href={`/rules?as=${view.viewerId}`}>Settings &amp; rules</Link>
-        <Link href={`/shopping?as=${view.viewerId}`}>Shopping list</Link>
-        <Link href={`/ideas?as=${view.viewerId}`}>Saved ideas</Link>
-      </nav>
       <DayStrip items={view.strip} selectedDay={view.day} viewerId={view.viewerId} />
       <PlanWindowButton viewerId={view.viewerId} />
       <VoteScreen data={view} />
-      {process.env.DEMO_MODE === "true" && <ResetDemoButton />}
+      {process.env.DEMO_MODE === "true" && (
+        <DemoTools viewerId={view.viewerId} planDayId={view.planDayId} day={view.day} />
+      )}
+      <TabBar mode="family" viewerId={view.viewerId} />
     </main>
   );
 }

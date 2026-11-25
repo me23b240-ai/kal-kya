@@ -32,7 +32,7 @@ export default function PlanWindowButton({ viewerId }: { viewerId: string }) {
       <button className="btn btn-quiet" onClick={run} disabled={busy}>
         {busy ? "Planning..." : "Plan the next days"}
       </button>
-      {done && <p className="note">Done \u2014 check the day strip above. (Already-planned days are never touched.)</p>}
+      {done && <p className="note">{"Done \u2014 check the day strip above. (Already-planned days are never touched.)"}</p>}
       {error && <p className="alert" role="alert">{error}</p>}
     </div>
   );

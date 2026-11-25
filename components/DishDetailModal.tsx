@@ -2,8 +2,20 @@
 import { useEffect, useRef } from "react";
 import type { DishView } from "@/lib/meal/types";
 
-export default function DishDetailModal({ dish, onClose }: { dish: DishView; onClose: () => void }) {
+function timeLine(dish: DishView): string | null {
+  if (!dish.handsOnMinutes && !dish.totalMinutes) return null;
+  const parts: string[] = [];
+  if (dish.handsOnMinutes) parts.push(`${dish.handsOnMinutes} min hands-on`);
+  if (dish.totalMinutes) parts.push(`${dish.totalMinutes} min total`);
+  return `${parts.join(", ")} (estimate, not tested)`;
+}
+
+export default function DishDetailModal({
+  dish, onClose, showProtein = false,
+}: { dish: DishView; onClose: () => void; showProtein?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const time = timeLine(dish);
+  const showProteinLine = showProtein && dish.proteinG != null;
 
   useEffect(() => {
     const el = ref.current;
@@ -19,6 +31,12 @@ export default function DishDetailModal({ dish, onClose }: { dish: DishView; onC
       <div className="dish-dialog-head">
         <h3 className="dish-name">{dish.name}</h3>
         {dish.nameHi && <p className="dish-hi" lang="hi">{dish.nameHi}</p>}
+        {(time || showProteinLine) && (
+          <p className="note">
+            {[time, showProteinLine ? `about ${dish.proteinG} g protein per serving (estimate)` : null]
+              .filter(Boolean).join(" \u00b7 ")}
+          </p>
+        )}
       </div>
 
       <section>

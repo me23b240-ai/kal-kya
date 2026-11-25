@@ -191,7 +191,7 @@ a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
   --saffron-tint: #F6DED5;
   --green-tint: #D6E8E2;
 }
-/* I have NOT run a numeric contrast check on these — please verify with a contrast tool before trusting it. */
+/* I have NOT run a numeric contrast check on these - please verify with a contrast tool before trusting it. */
 
 /* ---------- mode toggle ---------- */
 .mode-toggle { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 16px; background: var(--sand); min-height: 48px; margin-bottom: 8px; }
@@ -228,7 +228,7 @@ a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
   --saffron-tint: #EDE2FC;
   --green-tint: #E1E8DC;
 }
-/* Still not numerically contrast-checked — please verify with a tool before trusting it. */
+/* Still not numerically contrast-checked - please verify with a tool before trusting it. */
 
 /* ---------- sweep: a bright leading line with colour filling in behind it ---------- */
 .mode-sweep::before {
@@ -334,3 +334,21 @@ a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
 
 /* single mode: shadow was still hardcoded brown from the family theme */
 [data-theme="single"] { --shadow: 0 2px 0 rgba(60, 40, 90, .12), 0 10px 24px -12px rgba(60, 40, 90, .35); }
+
+/* ---------- page background white, central app column keeps its theme colour ---------- */
+body { background: #fff; }
+
+/* ---------- hierarchy / polish pass ---------- */
+.chips-label { font-size: 12px; font-weight: 600; color: var(--ink-soft); margin: 10px 0 2px; text-transform: uppercase; letter-spacing: .03em; }
+.dish-meta { font-size: 13px; color: var(--ink-soft); }
+.panel-quiet { box-shadow: none; border: 1px solid var(--line); background: transparent; }
+
+.demo-disclosure { margin-top: 8px; }
+.demo-disclosure summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; color: var(--ink-soft); list-style: none; }
+.demo-disclosure summary::-webkit-details-marker { display: none; }
+.demo-disclosure-body { display: grid; gap: 10px; margin-top: 8px; padding: 14px; border: 2px dashed var(--line); border-radius: 16px; }
+
+.tabbar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 440px; margin: 0 auto; display: flex; background: var(--paper); border-top: 2px solid var(--line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); z-index: 10; }
+.tabbar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 48px; justify-content: center; border-radius: 12px; font-weight: 600; font-size: 12px; color: var(--ink-soft); text-decoration: none; }
+.tabbar-item[aria-current="page"] { color: var(--ink); background: var(--sand); }
+.wrap { padding-bottom: 84px; }

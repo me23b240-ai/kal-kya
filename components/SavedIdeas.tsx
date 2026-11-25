@@ -55,7 +55,7 @@ export default function SavedIdeas({
   return (
     <section className="panel" aria-label="Saved ideas">
       <h3>Saved ideas</h3>
-      <p className="note">Bookmark a dish idea from Instagram, YouTube, wherever — with a rough sense of effort, time and category, so it's easy to pick up later.</p>
+      <p className="note">Bookmark a dish idea from Instagram, YouTube, wherever - with a rough sense of effort, time and category, so it's easy to pick up later.</p>
 
       {ideas.length === 0 ? (
         <p className="note">Nothing saved yet.</p>

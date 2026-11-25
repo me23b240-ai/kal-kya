@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import Header from "@/components/Header";
 import ShoppingScreen from "@/components/ShoppingScreen";
+import TabBar from "@/components/TabBar";
 import { admin, currentWindowDays, loadHousehold, loadMembers, loadSingleHousehold } from "@/lib/meal/server";
 import { loadShoppingList } from "@/lib/meal/shopping";
 import { tintFor } from "@/lib/meal/visual";
@@ -37,6 +38,7 @@ export default async function ShoppingPage({ searchParams }: { searchParams: Pro
       <p className="lede"><Link href={isSolo ? "/solo" : `/?as=${viewer.id}`}>{"\u2190"} Back</Link></p>
       <h2 className="day">Shopping list</h2>
       <ShoppingScreen viewerId={viewer.id} list={list} hideQuantities={isSolo} />
+      <TabBar mode={isSolo ? "single" : "family"} viewerId={isSolo ? undefined : viewer.id} />
     </main>
   );
 }

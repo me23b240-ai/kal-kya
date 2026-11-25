@@ -17,8 +17,8 @@ export async function askGeminiForDay(
   const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
   const goalLine =
-    goal === "quick" ? "This household especially wants quicker meals right now — among the goals below, lean toward lower totalMinutes when known." :
-    goal === "protein" ? "This household especially wants higher-protein meals right now — among the goals below, lean toward higher proteinG when known (it's null for many dishes; do not penalise those)." :
+    goal === "quick" ? "This household especially wants quicker meals right now - among the goals below, lean toward lower totalMinutes when known." :
+    goal === "protein" ? "This household especially wants higher-protein meals right now - among the goals below, lean toward higher proteinG when known (it's null for many dishes; do not penalise those)." :
     "";
 
   const prompt = [

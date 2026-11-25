@@ -28,7 +28,7 @@ export default function ModeTransitionProvider({ children }: { children: React.R
     const navigateAfter = reduced ? 60 : 380;
     const clearAfter = reduced ? 150 : 320;
 
-    // This component lives in the root layout, so it survives the router.push() below —
+    // This component lives in the root layout, so it survives the router.push() below -
     // unlike before, when the overlay was inside the page that was about to unmount.
     timer.current = setTimeout(() => {
       router.push(target === "single" ? "/solo" : "/");

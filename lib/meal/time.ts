@@ -27,7 +27,7 @@ export function dayLabel(day: string): string {
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 }
 
-/** Midnight at the start of the day AFTER `day`, in the app's fixed Asia/Kolkata offset — i.e. the end of `day`. */
+/** Midnight at the start of the day AFTER `day`, in the app's fixed Asia/Kolkata offset - i.e. the end of `day`. */
 export function dayEndMs(day: string): number {
   const [y, m, d] = addDays(day, 1).split("-").map(Number);
   return Date.UTC(y, m - 1, d, 0, 0, 0) - 330 * 60000;

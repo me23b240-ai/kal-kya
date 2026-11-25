@@ -2,7 +2,7 @@
 import ModeToggle from "@/components/ModeToggle";
 import DayStrip from "@/components/DayStrip";
 import PickScreen from "@/components/PickScreen";
-import Link from "next/link";
+import TabBar from "@/components/TabBar";
 import { buildSingleView } from "@/lib/meal/server";
 
 export const dynamic = "force-dynamic";
@@ -26,13 +26,9 @@ export default async function SoloHome({ searchParams }: { searchParams: Promise
   return (
     <main className="wrap" data-theme="single">
       <Header household={view.householdName} modeToggle={<ModeToggle current="single" />} />
-      <nav className="nav-links" aria-label="More">
-        <Link href="/rules?household=single">Allergies &amp; dislikes</Link>
-        <Link href="/shopping?household=single">Shopping list</Link>
-        <Link href="/ideas?household=single">Saved ideas</Link>
-      </nav>
       <DayStrip items={view.strip} selectedDay={view.day} basePath="/solo" />
       <PickScreen data={view} />
+      <TabBar mode="single" />
     </main>
   );
 }

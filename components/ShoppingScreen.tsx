@@ -58,7 +58,7 @@ export default function ShoppingScreen({ viewerId, list, hideQuantities = false 
         setShareMsg("Copied to clipboard.");
       }
     } catch {
-      // cancelled share sheet — not an error
+      // cancelled share sheet - not an error
     }
   }
 
@@ -108,7 +108,7 @@ export default function ShoppingScreen({ viewerId, list, hideQuantities = false 
         {hideQuantities && <p className="note">Amounts depend on you.</p>}
         {shareMsg && <p className="alert" role="status">{shareMsg}</p>}
         {allBought && <p className="note">Everything's bought. Nice.</p>}
-        {toBuy.length === 0 && <p className="note">Nothing to buy — it's all marked as already at home.</p>}
+        {toBuy.length === 0 && <p className="note">Nothing to buy - it's all marked as already at home.</p>}
         <ul className="shopping-list">
           {toBuy.map((g) => (
             <li key={g.key} className="shopping-row" data-bought={g.bought ? "true" : undefined}>

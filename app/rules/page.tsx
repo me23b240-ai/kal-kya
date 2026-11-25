@@ -4,6 +4,7 @@ import SettingsForm from "@/components/SettingsForm";
 import RulesManager from "@/components/RulesManager";
 import CooksPicks from "@/components/CooksPicks";
 import MealGoalPicker from "@/components/MealGoalPicker";
+import TabBar from "@/components/TabBar";
 import { admin, loadAllDishes, loadContainsSuggestions, loadFlaggedDishIds, loadHousehold, loadMembers, loadRules, loadSingleHousehold } from "@/lib/meal/server";
 import { tintFor } from "@/lib/meal/visual";
 
@@ -71,6 +72,7 @@ export default async function RulesPage({ searchParams }: { searchParams: Promis
           nudgeEveryDays={household.nudge_every_days}
         />
       )}
+      <TabBar mode={isSolo ? "single" : "family"} viewerId={isSolo ? undefined : viewer.id} />
     </main>
   );
 }

@@ -11,16 +11,16 @@ const styleLabel: Record<DishView["mealStyle"], string> = {
   complete: "Complete meal",
 };
 
-function timeLine(dish: DishView): string | null {
-  if (!dish.handsOnMinutes && !dish.totalMinutes) return null;
+function metaLine(dish: DishView): string | null {
   const parts: string[] = [];
-  if (dish.handsOnMinutes) parts.push(`${dish.handsOnMinutes} min hands-on`);
-  if (dish.totalMinutes) parts.push(`${dish.totalMinutes} min total`);
-  return `${parts.join(", ")} (estimate, not tested)`;
+  if (dish.pickedByName) parts.push(`Picked by ${dish.pickedByName}`);
+  if (dish.dislikedBy.length > 0) parts.push(`Not a favourite of ${dish.dislikedBy.join(", ")}`);
+  if (dish.aiReason) parts.push(dish.aiReason);
+  return parts.length ? parts.join(" \u00b7 ") : null;
 }
 
-export function DishFace({ dish, showProtein = false }: { dish: DishView; showProtein?: boolean }) {
-  const time = timeLine(dish);
+export function DishFace({ dish }: { dish: DishView }) {
+  const meta = metaLine(dish);
   return (
     <>
       {dish.imageUrl ? (
@@ -37,15 +37,7 @@ export function DishFace({ dish, showProtein = false }: { dish: DishView; showPr
         <span className="dish-name">{dish.name}</span>
         {dish.nameHi && <span className="dish-hi" lang="hi">{dish.nameHi}</span>}
         <span className="dish-style">{styleLabel[dish.mealStyle]}</span>
-        {time && <span className="dish-time">{time}</span>}
-        {showProtein && dish.proteinG != null && (
-          <span className="dish-protein">about {dish.proteinG} g protein per serving (estimate)</span>
-        )}
-        {dish.pickedByName && <span className="dish-picked">Picked by {dish.pickedByName}</span>}
-        {dish.dislikedBy.length > 0 && (
-          <span className="dish-disliked">Not a favourite of {dish.dislikedBy.join(", ")}</span>
-        )}
-        {dish.aiReason && <span className="dish-reason">{dish.aiReason}</span>}
+        {meta && <span className="dish-meta">{meta}</span>}
       </span>
     </>
   );
@@ -56,13 +48,13 @@ export default function DishCard({ dish, mine, busy, onPick, cta = "Vote for thi
   return (
     <div className="dish" data-mine={mine ? "true" : undefined}>
       <button type="button" className="dish-main" aria-pressed={!!mine} disabled={busy} onClick={onPick}>
-        <span className="dish-row"><DishFace dish={dish} showProtein={showProtein} /></span>
+        <span className="dish-row"><DishFace dish={dish} /></span>
         <span className="dish-cta">{mine ? "\u2713 Your vote" : cta}</span>
       </button>
       <button type="button" className="dish-details-btn" onClick={() => setDetailOpen(true)}>
         Ingredients &amp; steps
       </button>
-      {detailOpen && <DishDetailModal dish={dish} onClose={() => setDetailOpen(false)} />}
+      {detailOpen && <DishDetailModal dish={dish} onClose={() => setDetailOpen(false)} showProtein={showProtein} />}
     </div>
   );
 }

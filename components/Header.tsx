@@ -19,14 +19,17 @@ export default function Header({
         {modeToggle}
       </div>
       {members && (
-        <nav className="chips" aria-label="View as">
-          {members.map((m) => (
-            <Link key={m.id} href={`/?as=${m.id}`} className="chip" aria-current={m.id === viewerId ? "true" : undefined}>
-              <Avatar name={m.name} tint={m.tint} avatarUrl={m.avatarUrl} size={32} />
-              <span>{m.name}</span>
-            </Link>
-          ))}
-        </nav>
+        <>
+          <p className="chips-label">Viewing as</p>
+          <nav className="chips" aria-label="View as">
+            {members.map((m) => (
+              <Link key={m.id} href={`/?as=${m.id}`} className="chip" aria-current={m.id === viewerId ? "true" : undefined}>
+                <Avatar name={m.name} tint={m.tint} avatarUrl={m.avatarUrl} size={32} />
+                <span>{m.name}</span>
+              </Link>
+            ))}
+          </nav>
+        </>
       )}
     </header>
   );

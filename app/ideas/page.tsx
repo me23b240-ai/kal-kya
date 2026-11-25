@@ -1,6 +1,7 @@
 ﻿import Link from "next/link";
 import Header from "@/components/Header";
 import SavedIdeas from "@/components/SavedIdeas";
+import TabBar from "@/components/TabBar";
 import { admin, loadHousehold, loadMembers, loadSingleHousehold } from "@/lib/meal/server";
 import { loadSavedIdeas } from "@/lib/meal/ideas";
 import { tintFor } from "@/lib/meal/visual";
@@ -36,6 +37,7 @@ export default async function IdeasPage({ searchParams }: { searchParams: Promis
       <p className="lede"><Link href={isSolo ? "/solo" : `/?as=${viewer.id}`}>{"\u2190"} Back</Link></p>
       <h2 className="day">Saved ideas</h2>
       <SavedIdeas viewerId={viewer.id} ideas={ideas} isSolo={isSolo} memberNameOf={nameOf} />
+      <TabBar mode={isSolo ? "single" : "family"} viewerId={isSolo ? undefined : viewer.id} />
     </main>
   );
 }
