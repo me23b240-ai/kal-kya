@@ -2,7 +2,9 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-export default function DemoTools({ viewerId, planDayId, day }: { viewerId: string; planDayId: string | null; day: string }) {
+export default function DemoTools({
+  viewerId, planDayId, day, mode = "family",
+}: { viewerId: string; planDayId: string | null; day: string; mode?: "family" | "single" }) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [busy, setBusy] = useState<string | null>(null);
@@ -36,7 +38,10 @@ export default function DemoTools({ viewerId, planDayId, day }: { viewerId: stri
   async function resetDemo() {
     setBusy("reset"); setError(null);
     try {
-      const res = await fetch("/api/reset-demo", { method: "POST" });
+      const res = await fetch("/api/reset-demo", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ household: mode }),
+      });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error ?? "Couldn't reset. Try again.");
       setResetDone(true);
@@ -54,14 +59,14 @@ export default function DemoTools({ viewerId, planDayId, day }: { viewerId: stri
       <summary>Demo tools</summary>
       <div className="demo-disclosure-body">
         <p className="note">Shared demo: other visitors may see your changes.</p>
-        {planDayId && (
+        {mode === "family" && planDayId && (
           <button className="btn btn-dashed" onClick={lockNow} disabled={busy !== null}>
             {busy === "lock" ? "Locking..." : "Lock now"} <span className="tag">demo only</span>
           </button>
         )}
         {confirmReset ? (
           <div className="confirm">
-            <p>This clears votes, locks, rules and shopping items for the demo family.</p>
+            <p>This clears votes, locks, rules and shopping items for this demo household.</p>
             <div className="row">
               <button className="btn btn-quiet" onClick={() => setConfirmReset(false)} disabled={busy !== null}>Cancel</button>
               <button className="btn btn-ink" onClick={resetDemo} disabled={busy !== null}>{busy === "reset" ? "Resetting..." : "Yes, reset"}</button>

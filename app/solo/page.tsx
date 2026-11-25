@@ -2,6 +2,7 @@
 import ModeToggle from "@/components/ModeToggle";
 import DayStrip from "@/components/DayStrip";
 import PickScreen from "@/components/PickScreen";
+import DemoTools from "@/components/DemoTools";
 import TabBar from "@/components/TabBar";
 import { buildSingleView } from "@/lib/meal/server";
 
@@ -28,6 +29,9 @@ export default async function SoloHome({ searchParams }: { searchParams: Promise
       <Header household={view.householdName} modeToggle={<ModeToggle current="single" />} />
       <DayStrip items={view.strip} selectedDay={view.day} basePath="/solo" />
       <PickScreen data={view} />
+      {process.env.DEMO_MODE === "true" && (
+        <DemoTools viewerId={view.viewerId} planDayId={view.planDayId} day={view.day} mode="single" />
+      )}
       <TabBar mode="single" />
     </main>
   );

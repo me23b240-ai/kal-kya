@@ -24,9 +24,9 @@ export type ShoppingList = {
 
 const norm = (s: string) => s.trim().toLowerCase();
 
-/** Builds shopping_items from every locked day in the window. Idempotent: never touches a row that
- *  already exists for a (day, ingredient) pair, so ticks / have-at-home / manual items survive a rerun.
- *  Also drops not-yet-bought items for any day that is marked eating out (bought ones are kept). */
+/** Builds shopping_items from every locked day in the window. Idempotent even under concurrent calls:
+ *  each ingredient is inserted individually, and a unique index on (plan_day_id, lower(trim(item)))
+ *  rejects a duplicate at the database level (code 23505), which we simply ignore. */
 export async function syncShoppingList(db: Admin, householdId: string, windowDays: string[]): Promise<void> {
   const { data: days } = await db.from("plan_days")
     .select("id,status,locked_dish").eq("household_id", householdId).in("day", windowDays);
@@ -45,10 +45,16 @@ export async function syncShoppingList(db: Admin, householdId: string, windowDay
       if (ingredients.length === 0) continue;
       const { data: existing } = await db.from("shopping_items").select("item").eq("plan_day_id", day.id);
       const existingNames = new Set(((existing as { item: string }[]) ?? []).map((r) => norm(r.item)));
-      const toInsert = ingredients
-        .filter((ing) => ing.item && !existingNames.has(norm(ing.item)))
-        .map((ing) => ({ household_id: householdId, plan_day_id: day.id, item: ing.item, qty: ing.qty ?? null, is_manual: false }));
-      if (toInsert.length) await db.from("shopping_items").insert(toInsert);
+
+      for (const ing of ingredients) {
+        if (!ing.item || existingNames.has(norm(ing.item))) continue;
+        const { error } = await db.from("shopping_items").insert({
+          household_id: householdId, plan_day_id: day.id, item: ing.item, qty: ing.qty ?? null, is_manual: false,
+        });
+        if (error && error.code !== "23505") {
+          console.error("shopping item insert failed:", error);
+        }
+      }
     }
   }
 

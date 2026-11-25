@@ -1,7 +1,6 @@
-﻿import { admin, loadHousehold, loadMembers } from "@/lib/meal/server";
-import { done, fail } from "@/lib/meal/api";
+﻿import { admin, loadHousehold, loadMembers, loadSingleHousehold } from "@/lib/meal/server";
+import { done, fail, readBody, str } from "@/lib/meal/api";
 
-// Very simple per-process rate limit (resets on cold start) - fine for a single-instance demo.
 const hits = new Map<string, number[]>();
 function rateLimited(key: string, max = 5, windowMs = 60_000): boolean {
   const now = Date.now();
@@ -11,12 +10,15 @@ function rateLimited(key: string, max = 5, windowMs = 60_000): boolean {
   return arr.length > max;
 }
 
-// DEMO ONLY: only works when DEMO_MODE=true. Resets just the demo family household, never dishes/members.
-export async function POST() {
+// DEMO ONLY: only works when DEMO_MODE=true. Resets just the one demo household requested, never dishes/members.
+export async function POST(req: Request) {
   if (process.env.DEMO_MODE !== "true") return fail(404, "Demo reset isn't enabled.");
 
+  const b = await readBody(req);
+  const mode = str(b.household) === "single" ? "single" : "family";
+
   const db = admin();
-  const household = await loadHousehold(db);
+  const household = mode === "single" ? await loadSingleHousehold(db) : await loadHousehold(db);
   if (!household) return fail(404, "No household found.");
   if (rateLimited(household.id)) return fail(429, "Too many resets. Wait a minute and try again.");
 
@@ -31,6 +33,7 @@ export async function POST() {
     await db.from("tie_picks").delete().in("plan_day_id", dayIds);
     await db.from("turn_skips").delete().in("plan_day_id", dayIds);
     await db.from("shopping_items").delete().in("plan_day_id", dayIds);
+    await db.from("meal_responses").delete().in("plan_day_id", dayIds);
   }
   await db.from("plan_days").delete().eq("household_id", household.id);
   await db.from("rules").delete().eq("household_id", household.id);
