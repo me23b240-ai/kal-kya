@@ -120,3 +120,217 @@ button { font: inherit; color: inherit; cursor: pointer; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 @media (min-width: 700px) { .wrap { padding-top: 48px; } }
+
+/* ---------- dish & avatar image fixes (plain img, no next/image fill) ---------- */
+.tile-photo { position: relative; overflow: hidden; padding: 0; }
+.tile-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dish-style { align-self: flex-start; margin-top: 2px; padding: 2px 8px; border-radius: 999px; background: var(--sand); color: var(--ink-soft); font-size: 13px; }
+.avatar { overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ---------- day strip + plan window button (Part 2) ---------- */
+.daystrip { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; -webkit-overflow-scrolling: touch; margin-top: 4px; }
+.day-chip { scroll-snap-align: start; flex: none; min-width: 92px; min-height: 56px; display: grid; gap: 2px; padding: 8px 12px; border-radius: 14px; border: 2px solid var(--line); background: var(--paper); text-decoration: none; color: var(--ink); }
+.day-chip-label { font-weight: 600; font-size: 14px; }
+.day-chip-state { font-size: 12px; color: var(--ink-soft); }
+.day-chip[aria-current="true"] { border-color: var(--ink); background: var(--ink); }
+.day-chip[aria-current="true"] .day-chip-label, .day-chip[aria-current="true"] .day-chip-state { color: var(--cream); }
+.day-chip[data-state="locked"] { border-color: var(--green); }
+.day-chip[data-state="eating_out"] { opacity: .75; }
+.day-chip[data-state="unplanned"], .day-chip[data-state="not_enough"] { border-style: dashed; }
+.plan-window { margin: 4px 0 0; }
+
+/* ---------- rules screen, settings, demo tools, disliked-by tag ---------- */
+a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+.lede a { font-weight: 600; }
+.field { display: grid; gap: 6px; font-weight: 500; font-size: 14px; margin-bottom: 12px; }
+.field input, .field select { min-height: 44px; padding: 8px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; }
+.rules-list { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.rules-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 0; border-top: 1px solid var(--line); }
+.rules-row:first-child { border-top: 0; }
+.rules-value { font-weight: 600; }
+.tag-allergy { background: var(--saffron-tint); }
+.tag-dislike { background: var(--sand); }
+.rules-add { display: grid; gap: 4px; padding-top: 12px; border-top: 1px solid var(--line); }
+.demo-tools { border-style: dashed; }
+.dish-disliked { font-size: 13px; color: var(--ink-soft); font-style: italic; }
+
+/* ---------- shopping list ---------- */
+.shopping-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.shopping-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.shopping-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.shopping-row:first-child { border-top: 0; }
+.shopping-check { flex: none; width: 32px; height: 32px; min-height: 0; border-radius: 10px; border: 2px solid var(--line); background: var(--paper); color: var(--green); font-weight: 700; }
+.shopping-row[data-bought="true"] .shopping-item { text-decoration: line-through; color: var(--ink-soft); }
+.shopping-text { flex: 1; display: grid; gap: 2px; min-width: 0; }
+.shopping-item { font-weight: 600; }
+
+/* ---------- meal responses (head count + personal eat-it/eat-out prompt) ---------- */
+.headcount-row { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.meal-prompt { border-color: var(--saffron); }
+
+/* ---------- cook's picks ---------- */
+.dish-picked { font-size: 13px; color: var(--saffron); font-weight: 600; }
+.picks-list { list-style: none; margin: 0; padding: 0; max-height: 260px; overflow-y: auto; display: grid; gap: 4px; }
+.picks-row label { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+
+/* ---------- AI picker ---------- */
+.dish-reason { font-size: 13px; color: var(--ink-soft); font-style: italic; }
+.field-row { display: flex; flex-direction: row; align-items: center; gap: 8px; font-weight: 500; }
+.field-row input { width: 20px; height: 20px; }
+
+/* ---------- single mode theme (applied via [data-theme="single"] on that page's <main> only) ---------- */
+[data-theme="single"] {
+  --cream: #EEF3EC;
+  --paper: #F7FAF6;
+  --sand: #DCE8D9;
+  --line: #C7D9C2;
+  --ink: #1F2B24;
+  --ink-soft: #46574B;
+  --saffron: #E86F51;
+  --saffron-tint: #F6DED5;
+  --green-tint: #D6E8E2;
+}
+/* I have NOT run a numeric contrast check on these — please verify with a contrast tool before trusting it. */
+
+/* ---------- mode toggle ---------- */
+.mode-toggle { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; border-radius: 16px; background: var(--sand); min-height: 48px; margin-bottom: 8px; }
+.mode-pill { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 12px; background: var(--paper); box-shadow: var(--shadow); transition: transform .25s ease; }
+.mode-pill-right { transform: translateX(100%); }
+.mode-option { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+.mode-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.mode-option input:focus-visible ~ span { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 10px; padding: 2px 6px; }
+@media (prefers-reduced-motion: reduce) { .mode-pill { transition: none; } }
+
+.mode-sweep { position: fixed; inset: 0; z-index: 50; pointer-events: none; animation: sweep-up .68s ease-in-out forwards; }
+.mode-sweep-family { background: #F0A202; }
+.mode-sweep-single { background: #E86F51; }
+@keyframes sweep-up {
+  0%   { transform: translateY(100%); }
+  45%  { transform: translateY(0%); }
+  55%  { transform: translateY(0%); }
+  100% { transform: translateY(-100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mode-sweep { animation: sweep-fade 150ms ease-in-out forwards; }
+  @keyframes sweep-fade { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+}
+
+/* ---------- purple single-mode theme (overrides the earlier sage/coral attempt) ---------- */
+[data-theme="single"] {
+  --cream: #F3EEFB;
+  --paper: #FBF8FE;
+  --sand: #E6DCF5;
+  --line: #D3C2EC;
+  --ink: #2A1B47;
+  --ink-soft: #5B4B7A;
+  --saffron: #B07EF5;
+  --saffron-tint: #EDE2FC;
+  --green-tint: #E1E8DC;
+}
+/* Still not numerically contrast-checked — please verify with a tool before trusting it. */
+
+/* ---------- sweep: a bright leading line with colour filling in behind it ---------- */
+.mode-sweep::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  height: 4px;
+  background: #ffffff;
+  opacity: .9;
+  box-shadow: 0 0 18px 4px rgba(255, 255, 255, .7);
+}
+.mode-sweep { position: fixed; } /* ensure ::before positions relative to the sweep band itself */
+.mode-sweep-single { background: #8B5CF6; }
+
+/* ---------- dish time estimate ---------- */
+.dish-time { font-size: 13px; color: var(--ink-soft); }
+
+/* ---------- head row: title + switch side by side ---------- */
+.head-top { align-items: center; }
+
+/* ---------- compact mode switch (replaces the two-button bar) ---------- */
+.mode-switch { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 4px 10px 4px 4px; border-radius: 999px; border: 2px solid var(--line); background: var(--paper); cursor: pointer; flex: none; }
+.mode-switch-label { font-weight: 600; font-size: 14px; }
+.mode-switch-track { position: relative; width: 44px; height: 26px; border-radius: 999px; background: var(--sand); transition: background .2s ease; flex: none; }
+.mode-switch-knob { position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 50%; background: var(--paper); box-shadow: var(--shadow); transition: transform .2s ease; }
+.mode-switch[data-on="true"] .mode-switch-track { background: var(--saffron); }
+.mode-switch[data-on="true"] .mode-switch-knob { transform: translateX(18px); }
+.mode-switch:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .mode-switch-track, .mode-switch-knob { transition: none; } }
+
+/* ---------- .wrap paints its OWN background, so data-theme="single" (set on this same element)
+   actually covers the full page instead of leaving body's old colour showing through ---------- */
+.wrap { background: var(--cream); min-height: 100vh; }
+
+/* ---------- app logo ---------- */
+.brand-logo-wrap { display: flex; justify-content: center; margin-bottom: 8px; }
+.brand-logo { display: block; width: 100%; max-width: 220px; height: auto; border-radius: 20px; background: #fff; padding: 10px; box-shadow: var(--shadow); }
+
+/* ---------- small logo icon beside the title (overrides the earlier big hero banner) ---------- */
+.brand-logo-wrap { display: none; }
+.brand-row { display: flex; align-items: center; gap: 10px; }
+.brand-icon { width: 40px; height: 40px; flex: none; object-fit: contain; border-radius: 10px; background: #fff; padding: 4px; box-shadow: var(--shadow); }
+
+/* ---------- logo icon: blend out the white background instead of boxing it ---------- */
+.brand-icon { background: transparent; padding: 0; box-shadow: none; border-radius: 0; mix-blend-mode: multiply; }
+
+/* ---------- bigger logo icon ---------- */
+.brand-icon { width: 56px; height: 56px; }
+
+/* ---------- switch now always shows BOTH labels, active one highlighted ---------- */
+.mode-switch { gap: 6px; padding: 4px 8px; }
+.mode-switch-side { font-weight: 600; font-size: 12px; color: var(--ink-soft); transition: color .2s ease; }
+.mode-switch-side[data-active="true"] { color: var(--ink); }
+.mode-switch-track { width: 38px; height: 22px; }
+.mode-switch-knob { width: 18px; height: 18px; }
+.mode-switch[data-on="true"] .mode-switch-knob { transform: translateX(16px); }
+@media (prefers-reduced-motion: reduce) { .mode-switch-side { transition: none; } }
+
+/* ---------- meal preference + protein line ---------- */
+.dish-protein { font-size: 13px; color: var(--ink-soft); }
+.goal-options { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- logo, bigger still ---------- */
+.brand-icon { width: 100px; height: 100px; }
+
+/* ---------- logo, bigger still ---------- */
+.brand-icon { width: 100px; height: 100px; }
+
+/* ---------- saved ideas ---------- */
+.ideas-list { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 10px; }
+.ideas-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.ideas-row:first-child { border-top: 0; }
+.ideas-text { display: grid; gap: 2px; min-width: 0; }
+.ideas-name { font-weight: 600; }
+.ideas-row[data-cooked="true"] .ideas-name { text-decoration: line-through; color: var(--ink-soft); }
+.ideas-actions { display: flex; flex-direction: column; gap: 6px; flex: none; align-items: flex-end; }
+
+/* ---------- dish detail (ingredients + recipe steps) ---------- */
+.dish-details-btn { justify-self: start; min-height: 44px; padding: 8px 14px; border-radius: 12px; border: 2px solid var(--line); background: transparent; color: var(--ink-soft); font-weight: 600; font-size: 14px; margin-top: 4px; }
+.dish-main:focus-visible, .dish-details-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.dish-dialog { max-width: 420px; width: calc(100% - 32px); border: none; border-radius: 20px; padding: 20px; background: var(--paper); color: var(--ink); box-shadow: var(--shadow); }
+.dish-dialog::backdrop { background: rgba(0, 0, 0, .45); }
+.dish-dialog-head { margin-bottom: 4px; }
+.dish-dialog h4 { margin: 16px 0 8px; font-size: 16px; }
+.dish-ingredients, .dish-steps { margin: 0 0 12px; padding-left: 20px; display: grid; gap: 6px; }
+.dish-ingredients { list-style: disc; }
+.dish-steps { list-style: decimal; }
+
+/* ---------- UI fixes pass ---------- */
+
+/* logo gap: tighten as much as CSS can (image itself has baked-in white margin) */
+.brand-row { gap: 2px; }
+.brand-icon { margin-right: -10px; }
+
+/* nav links: proper tappable pills instead of plain underlined text */
+.nav-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 16px; }
+.nav-links a { display: inline-flex; align-items: center; min-height: 40px; padding: 6px 14px; border-radius: 999px; border: 2px solid var(--line); background: var(--paper); font-weight: 600; font-size: 14px; text-decoration: none; color: var(--ink); }
+
+/* plan-the-next-days: less isolated whitespace */
+.daystrip { margin-bottom: 4px; }
+.plan-window { margin: 0 0 14px; }
+.plan-window .btn { min-height: 40px; padding: 8px 16px; font-size: 14px; }
+
+/* single mode: shadow was still hardcoded brown from the family theme */
+[data-theme="single"] { --shadow: 0 2px 0 rgba(60, 40, 90, .12), 0 10px 24px -12px rgba(60, 40, 90, .35); }

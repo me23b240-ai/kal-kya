@@ -1,8 +1,8 @@
-export default function Loading() {
+﻿export default function Loading() {
   return (
     <main className="wrap" aria-busy="true" aria-label="Loading">
       <header className="head">
-        <div className="head-top"><h1 className="brand">Kal Kya</h1></div>
+        <div className="head-top"><h1 className="brand">Kal Kya?</h1></div>
         <div className="chips">{[0, 1, 2, 3].map((i) => <span key={i} className="chip skel" />)}</div>
       </header>
       <div className="stack">
