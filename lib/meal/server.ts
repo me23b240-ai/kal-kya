@@ -274,9 +274,15 @@ export async function getDayContext(db: Admin, planDayId: string) {
   return { plan: fresh as PlanDay, household, members: await loadMembers(db, household.id) };
 }
 
+const fileExistsCache = new Map<string, boolean>();
 function publicFileExists(url: string | null): url is string {
   if (!url) return false;
-  try { return fs.existsSync(path.join(process.cwd(), "public", url)); } catch { return false; }
+  const cached = fileExistsCache.get(url);
+  if (cached !== undefined) return cached;
+  let exists = false;
+  try { exists = fs.existsSync(path.join(process.cwd(), "public", url)); } catch { exists = false; }
+  fileExistsCache.set(url, exists);
+  return exists;
 }
 
 const visual = (
@@ -317,15 +323,16 @@ export async function buildView(asParam?: string, dayParam?: string): Promise<Vi
   await ensureDay(db, household, day);
   await lockDueDays(db, household);
 
-  const { data: windowRows } = await db.from("plan_days").select("day,status").eq("household_id", household.id).in("day", allDays);
-  const statusByDay = new Map(((windowRows as { day: string; status: "open" | "locked" | "eating_out" }[]) ?? []).map((r) => [r.day, r.status]));
+  // One query covers both the day strip AND the selected day's full detail — was two sequential queries before.
+  const { data: windowRows } = await db.from("plan_days").select("*").eq("household_id", household.id).in("day", allDays);
+  const allPlanRows = (windowRows as PlanDay[]) ?? [];
+  const statusByDay = new Map(allPlanRows.map((r) => [r.day, r.status]));
   const strip: DayStripItem[] = allDays.map((d) => ({
     day: d, label: dayLabel(d),
     state: statusByDay.get(d) ?? (d === day ? "not_enough" : "unplanned"),
   }));
+  const plan = allPlanRows.find((r) => r.day === day) ?? null;
 
-  const { data: pd } = await db.from("plan_days").select("*").eq("household_id", household.id).eq("day", day).maybeSingle();
-  const plan = pd as PlanDay | null;
   const viewer = members.find((m) => m.id === asParam) ?? members[0];
   const order = members.map((m) => m.id);
 
@@ -367,10 +374,7 @@ export async function buildView(asParam?: string, dayParam?: string): Promise<Vi
   const reasonFor = (dishId: string) =>
     dishId === plan.option_a ? plan.option_a_reason : dishId === plan.option_b ? plan.option_b_reason : null;
 
-  type DishRowDisplay = DishRow & {
-    image_url: string | null; meal_style: string | null; protein_basis: string | null;
-    ingredients: { item: string; qty?: string }[]; recipe_steps: string[] | null;
-  };
+  type DishRowDisplay = DishRow & { image_url: string | null; meal_style: string | null; protein_basis: string | null };
   const byId = new Map(((dishes as DishRowDisplay[]) ?? []).map((d) => [d.id, d]));
   const A = byId.get(plan.option_a), B = byId.get(plan.option_b);
   if (!A || !B) return out;
@@ -494,15 +498,14 @@ export async function buildSingleView(dayParam?: string): Promise<SingleViewData
 
   await ensureSingleDay(db, household, day);
 
-  const { data: windowRows } = await db.from("plan_days").select("day,status").eq("household_id", household.id).in("day", allDays);
-  const statusByDay = new Map(((windowRows as { day: string; status: "open" | "locked" | "eating_out" }[]) ?? []).map((r) => [r.day, r.status]));
+  const { data: windowRows } = await db.from("plan_days").select("*").eq("household_id", household.id).in("day", allDays);
+  const allPlanRows = (windowRows as SinglePlanDay[]) ?? [];
+  const statusByDay = new Map(allPlanRows.map((r) => [r.day, r.status]));
   const strip: DayStripItem[] = allDays.map((d) => ({
     day: d, label: dayLabel(d),
     state: statusByDay.get(d) ?? (d === day ? "not_enough" : "unplanned"),
   }));
-
-  const { data: pd } = await db.from("plan_days").select("*").eq("household_id", household.id).eq("day", day).maybeSingle();
-  const plan = pd as SinglePlanDay | null;
+  const plan = allPlanRows.find((r) => r.day === day) ?? null;
 
   const out: SingleViewData = {
     householdName: household.name, day, dayLabel: dayLabel(day), planningWindowDays: n, strip,
@@ -513,10 +516,7 @@ export async function buildSingleView(dayParam?: string): Promise<SingleViewData
   if (!plan.option_a || !plan.option_b) return out;
 
   const { data: dishes } = await db.from("dishes").select(DISH_DISPLAY_COLS_SOLO).in("id", [plan.option_a, plan.option_b]);
-  type DishRowDisplay = DishRow & {
-    image_url: string | null; meal_style: string | null; protein_basis: string | null;
-    ingredients: { item: string; qty?: string }[]; recipe_steps: string[] | null;
-  };
+  type DishRowDisplay = DishRow & { image_url: string | null; meal_style: string | null; protein_basis: string | null };
   const byId = new Map(((dishes as unknown as DishRowDisplay[]) ?? []).map((d) => [d.id, d]));
   const A = byId.get(plan.option_a), B = byId.get(plan.option_b);
   if (!A || !B) return out;

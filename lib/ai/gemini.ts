@@ -7,7 +7,7 @@ export type AICandidate = {
 };
 export type AIDayPick = { optionA: string; optionB: string; reasonA: string; reasonB: string };
 
-const TIMEOUT_MS = 8000;
+const TIMEOUT_MS = 3500; // was 8000 — failing fast to the rules picker is better UX than a long hang
 
 export async function askGeminiForDay(
   candidates: AICandidate[], otherDaysDishIds: string[], goal?: "none" | "quick" | "protein" | null,
@@ -17,8 +17,8 @@ export async function askGeminiForDay(
   const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
   const goalLine =
-    goal === "quick" ? "This household especially wants quicker meals right now - among the goals below, lean toward lower totalMinutes when known." :
-    goal === "protein" ? "This household especially wants higher-protein meals right now - among the goals below, lean toward higher proteinG when known (it's null for many dishes; do not penalise those)." :
+    goal === "quick" ? "This household especially wants quicker meals right now — among the goals below, lean toward lower totalMinutes when known." :
+    goal === "protein" ? "This household especially wants higher-protein meals right now — among the goals below, lean toward higher proteinG when known (it's null for many dishes; do not penalise those)." :
     "";
 
   const prompt = [
